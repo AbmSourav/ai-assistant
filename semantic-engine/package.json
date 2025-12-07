@@ -1,0 +1,20 @@
+{
+  "name": "semantic-engine",
+  "version": "1.0.0",
+  "author": "Keramot UL Islam",
+  "license": "MIT",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
