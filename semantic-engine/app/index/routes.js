@@ -1,9 +1,9 @@
 import express from 'express';
 
+import storeController from './controllers/storeController.js';
+
 const indexRouter = express.Router();
 
-indexRouter.get('/', (req, res) => {
-  res.status(200).json({ status: 'Data indexing in Vector Database' });
-});
+indexRouter.post('/store', storeController);
 
 export default indexRouter;
