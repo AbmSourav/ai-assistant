@@ -5,16 +5,14 @@ dotenv.config();
 const app = express();
 
 import indexRouter from './app/index/routes.js';
+import retrievalRouter from './app/retrieval/routes.js';
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/api', retrievalRouter);
 app.use('/api/index', indexRouter);
-
-// app.get('/', (req, res) => {
-//   res.json({ message: 'Welcome to Semantic Engine API...' });
-// });
 
 // Error handling middleware
 app.use((err, req, res, next) => {

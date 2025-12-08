@@ -27,7 +27,7 @@ const storeController = async (req, res) => {
     }
 
     try {
-        const batch = await ollama.embed({
+        const embeddedData = await ollama.embed({
             model: 'embeddinggemma:300m',
             input: input,
         })
@@ -35,7 +35,7 @@ const storeController = async (req, res) => {
         const points = [
             {
                 id: uuid(),
-                vector: batch.embeddings[0],
+                vector: embeddedData.embeddings[0],
                 payload,
             },
         ];
@@ -44,11 +44,11 @@ const storeController = async (req, res) => {
             wait: true,
             points: points,
         });
+        result.id = points[0].id;
 
         return res.status(200).json({
-            status: 'Data indexed successfully in Vector Database',
-            vectorDimensions: batch,
-            result: result
+            // vectorDimensions: embeddedData,
+            data: result
         });
     } catch (error) {
         console.error('Full error details:', error);

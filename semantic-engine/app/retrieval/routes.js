@@ -1,9 +1,11 @@
 import express from 'express';
 
 import getPointsController from './controllers/getPointsController.js';
+import retrievalController from './controllers/retrievalController.js';
 
-const indexRouter = express.Router();
+const retrievalRouter = express.Router();
 
-indexRouter.get('/points', getPointsController);
+retrievalRouter.get('/points', getPointsController);
+retrievalRouter.post('/retrieval', retrievalController);
 
-export default indexRouter;
+export default retrievalRouter;
