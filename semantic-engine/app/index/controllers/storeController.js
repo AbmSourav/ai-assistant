@@ -1,58 +1,113 @@
 import { Ollama } from 'ollama'
 import { v4 as uuid } from 'uuid';
 import { QdrantClient } from "@qdrant/js-client-rest";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 
 const ollama = new Ollama({ host: process.env.OLLAMA_API_URL });
 const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST });
+
+async function dataEmbed(data) {
+    return await ollama.embed({
+        model: 'embeddinggemma:300m',
+        input: data,
+    })
+}
 
 const storeController = async (req, res) => {
     const data = req.body
     const question = data?.question || ''
     const answer = data?.answer || ''
-    const info = data?.text || ''
+    const topic = data?.topic || ''
+    const description = data?.description || ''
     let input = []
-    const payload = {}
 
     if (question) {
-        payload.question = question
         input.push("question: " + question)
     }
     if (answer) {
-        payload.answer = answer
         input.push("answer: " + answer)
     }
-    if (info) {
-        payload.info = info
-        input.push("info: " + info)
+    if (topic) {
+        input.push("topic: " + topic)
+    }
+    if (description) {
+        input.push("description: " + description)
     }
 
-    try {
-        const embeddedData = await ollama.embed({
-            model: 'embeddinggemma:300m',
-            input: input,
-        })
+    // Split the text into chunks
+    const spliter = new RecursiveCharacterTextSplitter({
+        chunkSize: 500,
+        chunkOverlap: 200,
+        separators: ["\n\n", "\n", ". ", " ", ""],
+    })
+    let splitTexts = await spliter.splitText(input.join(" \n "))
 
-        const points = [
-            {
-                id: uuid(),
+    try {
+        const ids = []
+        const points = []
+
+        if (splitTexts.length > 1) {
+            await Promise.all(splitTexts.map(async (text, index) => {
+                const match = text.match(/^([.!?])\s*(.*)/)
+                if (match && index > 0) {
+                    text = match[2]
+                }
+
+                const embeddedData = await dataEmbed(text)
+
+                const id = uuid();
+                ids.push(id);
+
+                const payload = {}
+                if (question) payload.question = question;
+                if (topic) payload.topic = topic;
+                if (index !== 0) payload.dataChunk = text;
+
+                points.push({
+                    id: id,
+                    vector: embeddedData.embeddings[0],
+                    payload,
+                })
+            }))
+        } else {
+            const embeddedData = await dataEmbed(input.join(" \n "))
+            const payload = {}
+            if (question) payload.question = question;
+            if (topic) payload.topic = topic;
+            if (answer) payload.answer = answer
+            if (description) payload.description = description
+
+            const id = uuid()
+            ids.push(id)
+
+            points.push({
+                id,
                 vector: embeddedData.embeddings[0],
                 payload,
-            },
-        ];
+            })
+        }
 
-        const result = await qdrantClient.upsert("assistant", {
+        const result = await qdrantClient.upsert("test_assistant", {
             wait: true,
             points: points,
         });
-        result.id = points[0].id;
+
+        let getPoints = []
+        if (result.status === 'completed' && ids.length > 0) {
+            getPoints = await qdrantClient.retrieve("test_assistant", {
+                ids: ids,
+                with_payload: true,
+            });
+        }
 
         return res.status(200).json({
-            // vectorDimensions: embeddedData,
-            data: result
+            // points,
+            data: getPoints,
+            // result
+            // data: ids,
         });
     } catch (error) {
         console.error('Full error details:', error);
-        console.error('Error stack:', error.stack);
         res.status(500).json({
             status: 'Error',
             message: error.message,

@@ -12,6 +12,13 @@ const retrievalController = async (req, res) => {
         input: data?.query,
     })
 
+    if (!embeddedData || !embeddedData?.embeddings || embeddedData.embeddings?.length == 0) {
+        return res.status(400).json({
+            status: 'Error',
+            message: 'Failed to generate embeddings',
+        });
+    }
+
     const result = await qdrantClient.query("assistant", {
         query: embeddedData.embeddings[0],
         limit: 3,
@@ -19,7 +26,6 @@ const retrievalController = async (req, res) => {
     });
 
     res.status(200).json({
-        message: data?.query,
         results: result,
     });
 }

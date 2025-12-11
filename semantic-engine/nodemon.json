@@ -1,0 +1,14 @@
+{
+  "verbose": false,
+  "watch": ["app", "app.js"],
+  "ignore": [
+    "node_modules",
+    "qdrant_db",
+    "docker-configs",
+    "*.log",
+    "*.md",
+    ".git"
+  ],
+  "delay": "2000",
+  "ext": "js,json"
+}
