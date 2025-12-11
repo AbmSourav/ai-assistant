@@ -1,16 +1,16 @@
 import { v4 as uuid } from 'uuid';
-import { QdrantClient } from "@qdrant/js-client-rest";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import dataEmbed from '../../helpers/utilities.js';
+import { QdrantClient } from "@qdrant/js-client-rest"
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters"
 
-const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST });
+import dataEmbed from '../../helpers/utilities.js'
 
-const storeController = async (req, res) => {
-    const data = req.body
-    const question = data?.question || ''
-    const answer = data?.answer || ''
-    const topic = data?.topic || ''
-    const description = data?.description || ''
+const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST })
+
+const handleRequest = async (point) => {
+    const question = point?.question || ''
+    const answer = point?.answer || ''
+    const topic = point?.topic || ''
+    const description = point?.description || ''
     let input = []
 
     if (question) {
@@ -45,7 +45,7 @@ const storeController = async (req, res) => {
                     text = match[2]
                 }
 
-                const id = uuid();
+                const id = index === 0 ? point.id : uuid();
                 ids.push(id);
 
                 const payload = {}
@@ -72,35 +72,17 @@ const storeController = async (req, res) => {
             if (answer) payload.answer = answer
             if (description) payload.description = description
 
-            const id = uuid()
-            ids.push(id)
+            ids.push(point.id)
 
             points.push({
-                id,
+                id: point.id,
                 vector: embeddedData.embeddings[0],
                 payload,
             })
         }
 
-        const result = await qdrantClient.upsert("test_assistant", {
-            wait: true,
-            points: points,
-        });
+        return {ids, points}
 
-        let getPoints = []
-        if (result?.status === 'completed' && ids.length > 0) {
-            getPoints = await qdrantClient.retrieve("test_assistant", {
-                ids: ids,
-                with_payload: true,
-            });
-        }
-
-        return res.status(200).json({
-            // points,
-            data: getPoints,
-            // result
-            // data: ids,
-        });
     } catch (error) {
         console.error('Full error details:', error);
         res.status(500).json({
@@ -109,6 +91,37 @@ const storeController = async (req, res) => {
             details: error.toString()
         });
     }
+};
+
+const updateController = async (req, res) => {
+    const data = req.body
+
+    const ids = []
+    const points = []
+    let getPoints = []
+    let result = []
+
+    await Promise.all(data.map(async (point, index) => {
+        const updatedPoint = await handleRequest(point)
+        ids.push(...updatedPoint.ids)
+        points.push(...updatedPoint.points)
+    }))
+
+    if (points.length > 0) {
+        result = await qdrantClient.upsert("test_assistant", {
+            wait: true,
+            points: points,
+        });
+
+        if (result?.status === 'completed') {
+            getPoints = await qdrantClient.retrieve("test_assistant", {
+                ids: ids,
+                with_payload: true,
+            });
+        }
+    }
+
+    res.json({ ids })
 }
 
-export default storeController;
+export default updateController;
