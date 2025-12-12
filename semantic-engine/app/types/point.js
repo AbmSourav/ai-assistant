@@ -54,3 +54,8 @@ export const UpsertParentPointSchema = z.object({
     vector: z.array(z.number()).min(1, 'Vector must contain at least one element'),
     payload: ParentPayloadSchema,
 });
+
+export const GetDocumentsParamsSchema = z.object({
+    page: z.string().optional().default(1).transform(val => parseInt(val, 10)),
+    limit: z.string().optional().default(10).transform(val => parseInt(val, 10)),
+});

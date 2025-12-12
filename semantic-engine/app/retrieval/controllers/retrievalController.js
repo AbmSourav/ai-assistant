@@ -19,7 +19,7 @@ const retrievalController = async (req, res) => {
         });
     }
 
-    const result = await qdrantClient.query("assistant", {
+    const result = await qdrantClient.query(process.env.COLLECTION_NAME, {
         query: embeddedData.embeddings[0],
         limit: 3,
         with_payload: true,

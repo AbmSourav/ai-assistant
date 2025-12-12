@@ -27,7 +27,7 @@ const deleteDocumentService = async (req) => {
     }
 
     try {
-        return await qdrantClient.delete("test_assistant", {
+        return await qdrantClient.delete(process.env.COLLECTION_NAME, {
             wait: true,
             filter: filter,
         });

@@ -24,7 +24,7 @@ const createDocumentService = async (req, res) => {
 
     const ids = []
     const points = []
-    const collectionName = "test_assistant"
+    const collectionName = process.env.COLLECTION_NAME
 
     if (splitTexts.length > 1) {
         await Promise.all(splitTexts.map(async (text, index) => {

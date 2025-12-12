@@ -12,7 +12,7 @@ const getPointsController = async (req, res) => {
     const ids = validate.data.ids?.split(',').map(id => id.trim());
 
     try {
-        const result = await qdrantClient.retrieve("test_assistant", {
+        const result = await qdrantClient.retrieve(process.env.COLLECTION_NAME, {
             ids,
             with_payload: true
         });

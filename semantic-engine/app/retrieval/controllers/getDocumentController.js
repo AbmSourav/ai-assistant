@@ -26,7 +26,7 @@ const getDocumentController = async (req, res) => {
     }
 
     try {
-        const result = await qdrantClient.scroll("test_assistant", {
+        const result = await qdrantClient.scroll(process.env.COLLECTION_NAME, {
             filter,
             with_payload: true,
             with_vector: false,
