@@ -1,13 +1,18 @@
-import ollama from 'ollama'
 import { QdrantClient } from "@qdrant/js-client-rest";
+import { GetPointParamsSchema } from "../../types/point.js";
 
 const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST });
 
 const getPointsController = async (req, res) => {
-    const ids = req?.query?.ids?.split(',').map(id => id.trim());
+    const validate = GetPointParamsSchema.safeParse(req.query)
+    if (!validate?.success) {
+        return res.json({error: validate.error})
+    }
+
+    const ids = validate.data.ids?.split(',').map(id => id.trim());
 
     try {
-        const result = await qdrantClient.retrieve("assistant", {
+        const result = await qdrantClient.retrieve("test_assistant", {
             ids,
             with_payload: true
         });
