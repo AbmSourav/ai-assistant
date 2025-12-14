@@ -19,6 +19,10 @@ export const ParentPayloadSchema = z.object({
     detail: z.string().optional()
 });
 
+export const RetriveSchema = z.object({
+    userQuery: z.string(),
+});
+
 /**
  * Zod schema for Payload structure
  * Represents metadata associated with a point

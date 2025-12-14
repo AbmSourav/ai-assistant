@@ -20,6 +20,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+// app.get('/api', function(req, res) {
+//   res.json({"data": "Hello"})
+// })
+
 // Start server
 const PORT = 3000;
 app.listen(PORT, () => {

@@ -16,11 +16,11 @@ const createDocumentService = async (req, res) => {
 
     // Split the text into chunks
     const spliter = new RecursiveCharacterTextSplitter({
-        chunkSize: 500,
+        chunkSize: 600,
         chunkOverlap: 200,
         separators: ["\n\n", "\n", ". ", " ", ""],
     })
-    let splitTexts = await spliter.splitText(header + " \n " + detail)
+    let splitTexts = await spliter.splitText(header + " \n\n " + detail)
 
     const ids = []
     const points = []

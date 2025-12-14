@@ -1,5 +1,6 @@
 import { Ollama } from 'ollama'
 import { UpsertParentPointSchema, UpsertPointSchema } from '../types/point.js';
+import { getPromptHistory } from '../retrieval/services/prompt-augmentation.js';
 
 const ollama = new Ollama({ host: process.env.OLLAMA_API_URL });
 
@@ -14,6 +15,17 @@ export async function dataEmbed(data) {
             `Cannot connect to Ollama server at ${process.env.OLLAMA_API_URL}. ` +
             `Please ensure the Ollama server is running.`
         );
+    }
+}
+
+export async function chat() {
+    try {
+        return await ollama.chat({
+            model: 'llama3.1',
+            messages: getPromptHistory(),
+        });
+    } catch (error) {
+        console.error("content generation error:", error)
     }
 }
 

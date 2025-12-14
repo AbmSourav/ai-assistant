@@ -16,13 +16,16 @@ services:
       - ./docker-configs/default.conf:/etc/nginx/conf.d/default.conf
       - ./docker-configs/certs:/etc/nginx/certs:ro
       - ./:/app:delegated
+    dns_opt:
+      - "timeout:3"
+      - "attempts:2"
 
   engine:
     build:
       context: .
       dockerfile: ./docker-configs/node.dockerfile
     container_name: semantic_engine_app
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./:/app
       - /app/node_modules
@@ -36,6 +39,9 @@ services:
       - "3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    dns_opt:
+      - "timeout:3"
+      - "attempts:2"
     environment:
       - NODE_ENV=development
 

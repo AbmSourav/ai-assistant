@@ -1,16 +1,18 @@
-import { Ollama } from 'ollama'
 import { QdrantClient } from "@qdrant/js-client-rest"
+import { chat, dataEmbed } from '../../helpers/utilities.js'
+import { getPromptHistory, setRagContext, setUserQuery } from "../services/prompt-augmentation.js";
+import { RetriveSchema } from "../../types/point.js";
 
-const ollama = new Ollama({ host: process.env.OLLAMA_API_URL })
 const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST })
 
 const retrievalController = async (req, res) => {
-    const data = req.body;
+    const validate = RetriveSchema.safeParse(req.body)
+    if (!validate?.success) {
+        return res.json({error: validate.error})
+    }
 
-    const embeddedData = await ollama.embed({
-        model: 'embeddinggemma:300m',
-        input: data?.query,
-    })
+    const { userQuery } = validate.data
+    const embeddedData = await dataEmbed(userQuery)
 
     if (!embeddedData || !embeddedData?.embeddings || embeddedData.embeddings?.length == 0) {
         return res.status(400).json({
@@ -19,15 +21,47 @@ const retrievalController = async (req, res) => {
         });
     }
 
-    const result = await qdrantClient.query(process.env.COLLECTION_NAME, {
-        query: embeddedData.embeddings[0],
-        limit: 3,
-        with_payload: true,
-    });
+    try {
+        const result = await qdrantClient.query(process.env.COLLECTION_NAME, {
+            query: embeddedData.embeddings[0],
+            limit: 3,
+            with_payload: true,
+            filter: {
+                should: [
+                    {
+                        must_not: [{
+                            is_empty: {
+                                key: "parentId",
+                            }
+                        }],
+                    },
+                    {
+                        must_not: [{
+                            is_empty: {
+                                key: "detail",
+                            }
+                        }],
+                    },
+                ]
+            }
+        });
 
-    res.status(200).json({
-        results: result,
-    });
+        // generate the context using retrieval data and user's query
+        setRagContext(result.points)
+        setUserQuery(userQuery)
+
+        const generatedRes = await chat()
+
+        res.status(200).json({
+            results: generatedRes,
+            // result,
+            // result: getPromptHistory()
+            // test: "hello"
+        });
+    } catch (error) {
+        console.error (error)
+        throw new Error(error)
+    }
 }
 
 export default retrievalController;
