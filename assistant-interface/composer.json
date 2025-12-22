@@ -1,0 +1,14 @@
+{
+    "name": "abmsourav/assistant-interface",
+    "autoload": {
+        "psr-4": {
+            "AssistantInterface\\App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Keramot UL Islam"
+        }
+    ],
+    "require": {}
+}

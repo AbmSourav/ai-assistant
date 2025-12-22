@@ -1,0 +1,16 @@
+{
+    "name": "assistant-interface",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "wp-scripts build resources/app.js --output-path=build",
+        "start": "wp-scripts start resources/app.js --output-path=build",
+        "dev": "npm run start"
+    },
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@wordpress/scripts": "^31.1.0"
+    }
+}
