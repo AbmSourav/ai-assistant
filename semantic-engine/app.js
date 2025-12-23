@@ -20,9 +20,9 @@ app.use((err, req, res, next) => {
 	res.status(500).json({ error: 'Internal server error' });
 });
 
-// app.get('/api', function(req, res) {
-//   res.json({"data": "Hello"})
-// })
+app.get('/api/test', function(req, res) {
+  res.json({"data": "Hello test"})
+})
 
 // Start server
 const PORT = 3000;

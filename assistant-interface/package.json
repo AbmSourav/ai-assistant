@@ -6,11 +6,16 @@
     "scripts": {
         "build": "wp-scripts build resources/app.js --output-path=build",
         "start": "wp-scripts start resources/app.js --output-path=build",
+        "start:hot": "wp-scripts start resources/app.js --output-path=build --hot",
         "dev": "npm run start"
     },
     "author": "",
     "license": "MIT",
     "devDependencies": {
-        "@wordpress/scripts": "^31.1.0"
+        "@tailwindcss/postcss": "^4.1.18",
+        "@wordpress/scripts": "^31.1.0",
+        "autoprefixer": "^10.4.23",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^4.1.18"
     }
 }

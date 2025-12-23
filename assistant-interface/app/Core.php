@@ -3,6 +3,9 @@
 namespace AssistantInterface\App;
 
 use AssistantInterface\App\Lib\SingleTon;
+use AssistantInterface\App\Services\AdminInterface;
+use AssistantInterface\App\Services\Assets;
+use AssistantInterface\App\Services\KnowledgeBase;
 
 if (! defined('ABSPATH')) exit;
 
@@ -27,6 +30,7 @@ final class Core
         return [
             AdminInterface::class,
             Assets::class,
+            KnowledgeBase::class,
         ];
     }
 }

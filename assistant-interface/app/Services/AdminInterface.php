@@ -1,6 +1,6 @@
 <?php
 
-namespace AssistantInterface\App;
+namespace AssistantInterface\App\Services;
 
 use AssistantInterface\App\Lib\SingleTon;
 
@@ -29,6 +29,15 @@ class AdminInterface
             [$this, 'render_admin_page'],
             'dashicons-admin-comments',
             30
+        );
+
+        add_submenu_page(
+            'ai-assistant-interface',
+            __('Knowledge Base', 'assistant-interface'),
+            __('Knowledge Base', 'assistant-interface'),
+            'manage_options',
+            'ai-assistant-knowledge-base',
+            [$this, 'render_admin_page']
         );
     }
 

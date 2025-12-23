@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+    --color-*: initial;
+    --font-*: initial;
+}
+
+@layer base {
+    :root {
+        --wp-admin-theme-color: #2271b1;
+    }
+}

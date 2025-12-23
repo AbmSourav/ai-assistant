@@ -5,8 +5,8 @@
  */
 /*
 Plugin Name: AI Assistant Interface
-Plugin URI: 
-Description: 
+Plugin URI:
+Description:
 Author: Keramot UL Islam
 Version: 1.0.0
 Author URI: https://abmsourav.com
@@ -23,6 +23,8 @@ use AssistantInterface\App\Core;
 define('AIAI_FILE', __FILE__);
 define('AIAI_DIR_PATH', plugin_dir_path(AIAI_FILE));
 define('AIAI_DIR_URL', plugins_url('/', AIAI_FILE));
+define('AIAI_APP_URL', 'https://ai-assistant.test:2050');
+define('AIAI_DEV_MODE', true);
 
 if (file_exists(AIAI_DIR_PATH . '/vendor/autoload.php')) {
 	require_once AIAI_DIR_PATH . '/vendor/autoload.php';

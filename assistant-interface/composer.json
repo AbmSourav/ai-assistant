@@ -10,5 +10,7 @@
             "name": "Keramot UL Islam"
         }
     ],
-    "require": {}
+    "require": {
+        "codesvault/validator": "^1.2"
+    }
 }
