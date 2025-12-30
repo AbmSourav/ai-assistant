@@ -1,6 +1,8 @@
 import { v4 as uuid } from 'uuid';
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import moment from 'moment';
+
 import { dataEmbed, preparePoint } from '../../helpers/utilities.js';
 import { PointStoreParamsSchema } from '../../types/point.js';
 
@@ -9,7 +11,7 @@ const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST })
 const createDocumentService = async (req, res) => {
     const validatedData = PointStoreParamsSchema.safeParse(req.body)
     if (!validatedData?.success) {
-        return res.json({error: validatedData.error})
+        return res.status(422).json({error: validatedData.error}, )
     }
 
     const { header, detail } = validatedData.data
@@ -26,6 +28,7 @@ const createDocumentService = async (req, res) => {
     const points = []
     const collectionName = process.env.COLLECTION_NAME
 
+	const timestamp = moment().toISOString()
     if (splitTexts.length > 1) {
         await Promise.all(splitTexts.map(async (text, index) => {
             const match = text.match(/^([.!?])\s*(.*)/)
@@ -36,7 +39,10 @@ const createDocumentService = async (req, res) => {
             const id = uuid();
             ids.push(id);
 
-            const payload = { header }
+            const payload = {
+                header,
+                timestamp
+            }
             if (index !== 0) {
                 payload.dataChunk = text;
                 payload.parentId = ids[0]
@@ -54,7 +60,11 @@ const createDocumentService = async (req, res) => {
         }))
     } else {
         const embeddedData = await dataEmbed(header + " \n " + detail)
-        const payload = { header, detail }
+        const payload = {
+            header,
+            detail,
+            timestamp
+        }
 
         const id = uuid()
         ids.push(id)

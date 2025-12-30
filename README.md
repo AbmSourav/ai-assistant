@@ -7,47 +7,102 @@ It's a RAG (Retrieval-Augmented Generation) application with a WordPress fronten
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    User Interface                       │
-│              (WordPress Admin Panel)                    │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-                      │ User Interaction
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│          WordPress Plugin (assistant-interface)         │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Frontend (React)                                │   │
-│  │                              					  │   │
-│  └──────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Backend (PHP)                          		  │   │
-│  └──────────────────────────────────────────────────┘   │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-                      │ REST API Calls
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│         RAG Backend (semantic-engine)                   │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Indexing Module (app/index)                     │   │
-│  │  - Store/Delete/Re-store Documents               │   │
-│  │  - Document Processing                           │   │
-│  └──────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Retrieval Module (app/retrieval)                │   │
-│  │  - Semantic Search                               │   │
-│  │  - Prompt Augmentation                           │   │
-│  │  - Document Retrieval                            │   │
-│  └──────────────────────────────────────────────────┘   │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-                      │ Vector Operations
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│              Vector Database (Qdrant)                   │
-│                   (qdrant_db/)                          │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                          User Interface                              │
+│                     (WordPress Admin Panel)                          │
+│                         http://localhost:8000                        │
+│  Provides interactive web interface for document management          │
+│  and AI-powered question answering                                   │
+└────────────────────────────────┬─────────────────────────────────────┘
+                                 │
+                                 │ User Interaction
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│              WordPress Plugin (assistant-interface)                  │
+│         Location: assistant-interface/wordpress/wp-content/          │
+│                      plugins/assistant-interface/                    │
+│  ┌───────────────────────────────────────────────────────────────┐   │
+│  │  Frontend Layer (React + Webpack)                             │   │
+│  │  • Renders responsive UI components                           │   │
+│  │  • Handles user input and form submissions                    │   │
+│  │  • Manages client-side state and interactions                 │   │
+│  │  • Compiles JSX/CSS into optimized bundles                    │   │
+│  └───────────────────────────────────────────────────────────────┘   │
+│  ┌───────────────────────────────────────────────────────────────┐   │
+│  │  Backend Layer (PHP)                                          │   │
+│  │  • Processes HTTP requests from frontend                      │   │
+│  │  • Manages WordPress integration and hooks                    │   │
+│  │  • Forwards API calls to semantic-engine                      │   │
+│  │  • Handles authentication and authorization                   │   │
+│  └───────────────────────────────────────────────────────────────┘   │
+│  ┌───────────────────────────────────────────────────────────────┐   │
+│  │  Infrastructure (Docker)                                      │   │
+│  │  • Nginx serves static assets and routes requests             │   │
+│  │  • PHP-FPM processes WordPress application logic              │   │
+│  │  • MySQL stores WordPress data and configurations             │   │
+│  └───────────────────────────────────────────────────────────────┘   │
+└────────────────────────────────┬─────────────────────────────────────┘
+                                 │
+                                 │ REST API Calls (HTTP/HTTPS)
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│              RAG Backend (semantic-engine)                           │
+│              Location: ai-assistant/semantic-engine/                 │
+│  ┌───────────────────────────────────────────────────────────────┐   │
+│  │  Indexing Module (app/index/)                                 │   │
+│  │  • Dynamically indexes documents in vector database           │   │
+│  │  • Processes and chunks documents for embedding               │   │
+│  │  • Manages document lifecycle (store/delete/re-index)         │   │
+│  │  • Generates vector embeddings using Ollama                   │   │
+│  │                                                               │   │
+│  │  API Endpoints:                                               │   │
+│  │    POST   /index/store     - Index new documents              │   │
+│  │    DELETE /index/delete    - Remove indexed documents         │   │
+│  │    POST   /index/re-store  - Reindex existing documents       │   │
+│  └───────────────────────────────────────────────────────────────┘   │
+│  ┌───────────────────────────────────────────────────────────────┐   │
+│  │  Retrieval Module (app/retrieval/)                            │   │
+│  │  • Performs semantic search on user queries                   │   │
+│  │  • Augments prompts with retrieved context                    │   │
+│  │  • Generates AI responses using RAG approach                  │   │
+│  │  • Retrieves relevant document chunks and metadata            │   │
+│  │                                                               │   │
+│  │  API Endpoints:                                               │   │
+│  │    POST /retrieval          - Query with RAG                  │   │
+│  │    GET  /retrieval/document - Fetch specific document         │   │
+│  │    GET  /retrieval/documents- List all documents              │   │
+│  │    GET  /retrieval/points   - Get vector points               │   │
+│  └───────────────────────────────────────────────────────────────┘   │
+│  ┌───────────────────────────────────────────────────────────────┐   │
+│  │  Infrastructure (Docker)                                      │   │
+│  │  • Node.js runtime executes application logic                 │   │
+│  │  • Nginx reverse proxy with SSL termination                   │   │
+│  │  • Ollama integration for embeddings and generation           │   │
+│  └───────────────────────────────────────────────────────────────┘   │
+└────────────────────────────────┬─────────────────────────────────────┘
+                                 │
+                                 │ Vector Operations
+                                 │ (Embedding Storage & Retrieval)
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                  Vector Database (Qdrant)                            │
+│                      Storage: qdrant_db/                             │
+│  • Stores high-dimensional vector embeddings                         │
+│  • Performs fast similarity search using HNSW algorithm              │
+│  • Manages document metadata and payloads                            │
+│  • Enables semantic retrieval for RAG operations                     │
+└──────────────────────────────────────────────────────────────────────┘
+                                 ▲
+                                 │
+                          Powered by Ollama
+                                 │
+                    ┌────────────────────────────┐
+                    │    Ollama (Local AI)       │
+                    │  • Generates embeddings    │
+                    │  • Produces AI responses   │
+                    │  • Runs locally on host    │
+                    └────────────────────────────┘
 ```
 
 <br>

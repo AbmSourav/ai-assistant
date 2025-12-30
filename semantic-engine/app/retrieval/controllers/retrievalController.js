@@ -8,7 +8,7 @@ const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST })
 const retrievalController = async (req, res) => {
     const validate = RetriveSchema.safeParse(req.body)
     if (!validate?.success) {
-        return res.json({error: validate.error})
+        return res.status(422).json({error: validate.error})
     }
 
     const { userQuery } = validate.data

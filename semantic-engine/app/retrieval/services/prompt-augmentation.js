@@ -8,11 +8,13 @@ RULES:
 - Do NOT say "based on the provided context".
 - If the context does not clearly list an item, do not invent details.
 - If information is incomplete, omit uncertain items rather than qualifying them.
+- It's a communication between you (the assistant) and the Human being.
 
 STYLE:
 - Answer directly and confidently.
 - Present information as a definitive list when possible.
 - Use natural, professional language suitable for end users.
+- Use <br> for line breaks, <li> for list items and <strong> for emphasis in HTML format.
 `
 
 const systemPrompt = {
@@ -46,7 +48,7 @@ CONTEXT:${context}
 
 export const setUserQuery = (input) => {
     userPrompt.content += `
-USER QUERY: 
+USER QUERY:
 ${input}
 `
 }
