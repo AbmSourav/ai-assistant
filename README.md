@@ -107,6 +107,66 @@ It's a RAG (Retrieval-Augmented Generation) application with a WordPress fronten
 
 <br>
 
+## Conversation flow
+
+The RAG system maintains conversation context through an intelligent summarization approach that preserves conversation history while optimizing token usage.
+
+### Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     First Question (Initial Query)                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  User Query                                                         │
+│       │                                                             │
+│       ├─► Semantic Search (Qdrant)                                  │
+│       │                                                             │
+│       ├─► Context Retrieval                                         │
+│       │                                                             │
+│       ├─► Prompt Augmentation                                       │
+│       │                                                             │
+│       └─► AI Response Generation                                    │
+│                                                                     │
+│  Output:                                                            │
+│    • AI Answer                                                      │
+│    • Summary (Initial Context)                                      │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              Second and Nth Question (Context-Aware Query)          │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  User Query + Previous Summary                                      │
+│       │                                                             │
+│       ├─► Semantic Search (with conversation context)               │
+│       │                                                             │
+│       ├─► Context Retrieval                                         │
+│       │                                                             │
+│       ├─► Prompt Augmentation                                       │
+│       │   (Previous Summary + New Context)                          │
+│       │                                                             │
+│       └─► AI Response Generation                                    │
+│                                                                     │
+│  Output:                                                            │
+│    • AI Answer                                                      │
+│    • Updated Summary                                                │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Benefits of This Approach
+
+1. **Context Preservation**: Each question builds upon previous interactions
+2. **Token Efficiency**: Summaries compress conversation history without losing key information
+3. **Semantic Continuity**: Follow-up questions can reference earlier topics naturally
+4. **Scalable Conversations**: Long conversations remain manageable through progressive summarization
+5. **Enhanced Retrieval**: Cumulative context improves relevance of retrieved documents
+
+<br>
+
 ## Project Structure
 
 ```

@@ -22,6 +22,7 @@ export const ParentPayloadSchema = z.object({
 
 export const RetriveSchema = z.object({
     userQuery: z.string(),
+	previousSummary: z.string().optional()
 });
 
 export const PayloadSchema = z.object({

@@ -8,7 +8,7 @@ const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST });
 const getDocumentsController = async (req, res) => {
     const validate = GetDocumentsParamsSchema.safeParse(req.query);
     if (!validate?.success) {
-        return res.json({ error: validate.error });
+        return res.status(422).json({error: validate.error})
     }
 
     const { limit, startFrom } = validate.data

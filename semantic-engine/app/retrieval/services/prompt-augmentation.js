@@ -1,25 +1,13 @@
-
-const systemInstruction = `
-You are a product expert assistant.
-
-RULES:
-- Use ONLY the provided context to determine facts.
-- Do NOT mention the context, sources, or retrieval process in your answer.
-- Do NOT say "based on the provided context".
-- If the context does not clearly list an item, do not invent details.
-- If information is incomplete, omit uncertain items rather than qualifying them.
-- It's a communication between you (the assistant) and the Human being.
-
-STYLE:
-- Answer directly and confidently.
-- Present information as a definitive list when possible.
-- Use natural, professional language suitable for end users.
-- Use <br> for line breaks, <li> for list items and <strong> for emphasis in HTML format.
-`
+import { systemInstruction } from "./system-prompts.js"
 
 const systemPrompt = {
     role: "system",
     content: systemInstruction
+}
+
+const previousSummary = {
+    role: "user",
+    content: ""
 }
 
 const userPrompt = {
@@ -53,4 +41,17 @@ ${input}
 `
 }
 
-export const getPromptHistory = () => history
+export const setSummaryContext = (prevSummary) => {
+	if (! prevSummary) return
+
+	previousSummary.content = `Previous Summary:
+${prevSummary}
+`
+}
+
+export const getPromptHistory = () => {
+	if (previousSummary.content) {
+		return [systemPrompt, previousSummary, userPrompt]
+	}
+	return history
+}

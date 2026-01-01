@@ -6,7 +6,7 @@ const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST });
 const getDocumentController = async (req, res) => {
     const validate = GetPointParamsSchema.safeParse(req.query)
     if (!validate?.success) {
-        return res.json({error: validate.error})
+        return res.status(422).json({error: validate.error})
     }
 
     const { parentId } = validate.data

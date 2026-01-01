@@ -7,7 +7,7 @@ const qdrantClient = new QdrantClient({ url: process.env.QDRANT_HOST })
 const deleteDocumentService = async (req) => {
     const validate = PointDeleteParamsSchema.safeParse(req.body)
     if (!validate?.success) {
-        return res.json({error: validate.error})
+        return res.status(422).json({error: validate.error})
     }
 
     const { parentId } = validate.data
