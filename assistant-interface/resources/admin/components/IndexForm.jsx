@@ -1,12 +1,18 @@
-import { __experimentalInputControl as InputControl, Button, TextareaControl, Notice } from '@wordpress/components';
+import { __experimentalInputControl as InputControl, Button, TextareaControl, Notice, Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+
+import { AppStore } from '../store';
+import { useEffect } from 'react';
 
 const IndexForm = () => {
+    const { store, setStore } = useContext(AppStore);
+
     const [ title, setTitle ] = useState('');
     const [ details, setDetails ] = useState('');
     const [ isSubmitting, setIsSubmitting ] = useState(false);
     const [ notice, setNotice ] = useState({ show: false, type: '', message: '' });
+    const [ submitButtonText, setSubmitButtonText ] = useState(__('Store', 'assistant-interface'));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,8 +33,11 @@ const IndexForm = () => {
             const formData = new FormData();
             formData.append('action', 'handleIndexData');
             formData.append('nonce', aiAssistantData.nonce);
-            formData.append('title', title);
-            formData.append('details', details);
+            formData.append('header', title);
+            formData.append('detail', details.replace(/\n/g, "\n"));
+            if (store.editDocumentId) {
+                formData.append('parentId', store.editDocumentId);
+            }
 
             const response = await fetch(aiAssistantData.ajaxUrl, {
                 method: 'POST',
@@ -36,7 +45,6 @@ const IndexForm = () => {
             });
 
             const res = await response.json();
-            console.log("res::", res)
 
             if (res.success) {
                 setNotice({
@@ -46,6 +54,12 @@ const IndexForm = () => {
                 });
                 setTitle('');
                 setDetails('');
+                // Trigger list refresh and close modal
+                setStore(prevStore => ({
+                    ...prevStore,
+                    updateList: Date.now(),
+                    editDocumentId: null
+                }));
             } else {
                 setNotice({
                     show: true,
@@ -64,10 +78,20 @@ const IndexForm = () => {
         }
     }
 
-    return (
-        <div className='max-w-[800px] mx-auto p-6'>
-            <h2 className='text-2xl font-bold mb-6'>{__('Create Knowledge Base', 'assistant-interface')}</h2>
+    useEffect(() => {
+        setTitle(store.documentHeader || '');
+        setDetails(store.documentDetails || '');
+        if (store.editDocumentId) {
+            setSubmitButtonText(__('Update', 'assistant-interface'));
+        }
+    }, [store.documentDetails]);
 
+    if (store?.editDocumentId && !store?.documentDetails) {
+        return <Spinner />;
+    }
+
+    return (
+        <>
             {notice.show && (
                 <Notice
                     status={notice.type}
@@ -101,7 +125,7 @@ const IndexForm = () => {
                         value={details}
                         onChange={(nextValue) => setDetails(nextValue)}
                         placeholder={__('Enter detailed information or answer', 'assistant-interface')}
-                        rows={8}
+                        rows={12}
                         disabled={isSubmitting}
                     />
                 </div>
@@ -112,13 +136,13 @@ const IndexForm = () => {
                         type='submit'
                         disabled={isSubmitting}
                         isBusy={isSubmitting}
-                        className='!px-8 !py-5 !text-[18px]'
+                        className='!px-12 !py-6 !text-[18px] !bg-[#099a5f] hover:!bg-[#087a4d]'
                     >
-                        {isSubmitting ? __('Processing...', 'assistant-interface') : __('Store', 'assistant-interface')}
+                        {isSubmitting ? __('Processing...', 'assistant-interface') : submitButtonText}
                     </Button>
                 </div>
             </form>
-        </div>
+        </>
     );
 };
 

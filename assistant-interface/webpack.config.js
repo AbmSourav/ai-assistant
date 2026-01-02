@@ -29,8 +29,17 @@ const updatedRules = defaultConfig.module.rules.map(rule => {
     return rule;
 });
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 module.exports = {
     ...defaultConfig,
+    mode: isProduction ? 'production' : 'development',
+    devtool: isProduction ? false : 'source-map',
+    optimization: {
+        ...defaultConfig.optimization,
+        minimize: isProduction,
+        minimizer: isProduction ? defaultConfig.optimization.minimizer : [],
+    },
     plugins: filteredPlugins,
     module: {
         ...defaultConfig.module,

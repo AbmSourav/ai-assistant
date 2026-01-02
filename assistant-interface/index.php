@@ -5,8 +5,8 @@
  */
 /*
 Plugin Name: AI Assistant Interface
-Plugin URI:
-Description:
+Plugin URI: 
+Description: 
 Author: Keramot UL Islam
 Version: 1.0.0
 Author URI: https://abmsourav.com

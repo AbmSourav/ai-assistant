@@ -4,10 +4,11 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "wp-scripts build resources/app.js --output-path=build",
-        "start": "wp-scripts start resources/app.js --output-path=build",
-        "start:hot": "wp-scripts start resources/app.js --output-path=build --hot",
-        "dev": "npm run start"
+        "build:admin": "wp-scripts build resources/admin/app.js --output-path=build",
+        "build:block": "wp-scripts build resources/block/index.js --output-path=resources/block/build",
+        "start": "NODE_ENV=development wp-scripts start resources/admin/app.js --output-path=build",
+        "start:admin:hot": "NODE_ENV=development wp-scripts start resources/admin/app.js --output-path=build --hot",
+        "dev": "npm run start:admin:hot"
     },
     "author": "",
     "license": "MIT",
@@ -17,5 +18,8 @@
         "autoprefixer": "^10.4.23",
         "postcss": "^8.5.6",
         "tailwindcss": "^4.1.18"
+    },
+    "dependencies": {
+        "@wordpress/icons": "^11.4.0"
     }
 }

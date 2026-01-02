@@ -60,9 +60,9 @@ class Http
 
 		if (AIAI_DEV_MODE) {
             $arguments['sslverify'] = false;
-			$res = \wp_remote_get($url, $arguments);
+			$res = \wp_remote_post($url, $arguments);
 		} else {
-			$res = \wp_safe_remote_get($url, $arguments);
+			$res = \wp_safe_remote_post($url, $arguments);
 		}
 
 		return new Response($res);

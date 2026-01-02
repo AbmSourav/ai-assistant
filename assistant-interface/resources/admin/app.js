@@ -1,5 +1,6 @@
 import { createRoot } from '@wordpress/element';
-import IndexForm from './components/IndexForm';
+
+import AppRouter from './AppRouter';
 import './app.css';
 
 console.log('App.js loaded');
@@ -9,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (container) {
         const root = createRoot(container);
-        root.render(<IndexForm />);
+        root.render(<AppRouter />);
     } else {
         console.error('Container #ai-assistant-container not found!');
     }

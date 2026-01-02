@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "name": "assistant-interface/chat-block",
+  "title": "Chat Block",
+  "category": "widgets",
+  "icon": "format-chat",
+  "description": "AI-powered chat block",
+  "editorScript": "file:./build/index.js",
+  "viewScript": "file:./chat.js",
+  "style": "file:./build/style-index.css"
+}
