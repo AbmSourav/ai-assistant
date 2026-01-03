@@ -1,6 +1,13 @@
 # AI Assistant
 
-It's a RAG (Retrieval-Augmented Generation) application with a WordPress frontend interface.
+A 𝐩𝐫𝐢𝐯𝐚𝐜𝐲-𝐟𝐢𝐫𝐬𝐭 𝐑𝐀𝐆 𝐀𝐈 𝐚𝐬𝐬𝐢𝐬𝐭𝐚𝐧𝐭 𝐟𝐨𝐫 𝐖𝐨𝐫𝐝𝐏𝐫𝐞𝐬𝐬. 
+<br> 
+The RAG application runs with a 𝐩𝐫𝐢𝐯𝐚𝐭𝐞𝐥𝐲 𝐡𝐨𝐬𝐭𝐞𝐝 𝐋𝐋𝐌, ensuring your data never leaves your infrastructure - no third-party AI APIs, no external data sharing.  
+
+🧠 Dynamic data indexing — create, update, or delete your AI knowledge base directly from the WordPress admin panel  
+📚 RAG-powered, only context-aware answers  
+🔐 Full data ownership & protection  
+🧩 Native WordPress UI
 
 <br>
 
