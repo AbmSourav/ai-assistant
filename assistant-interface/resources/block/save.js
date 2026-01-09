@@ -1,5 +1,5 @@
 
-export default function Save( { attributes: { message }, setAttributes } ) {
+export default function Save( { attributes, setAttributes } ) {
     return (
         <div className="assistant-chat-block">
             <div className='assistant-chat-box'>
@@ -20,7 +20,7 @@ export default function Save( { attributes: { message }, setAttributes } ) {
 
             <div className='assistant-chat'>
                 <img
-                src={ '' }
+                src={ attributes.pluginUrl + '/resources/block/images/chat.png' }
                 alt="Chat Block Placeholder"
                 style={ { width: '50px', height: 'auto' } }
                 />
